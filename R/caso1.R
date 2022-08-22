@@ -2,6 +2,7 @@
 library(tidyverse)
 library(sf)
 library(spdep)
+set.seed(42)
 
 # cargar funciones para el curso
 source("R/funciones_caso1.R")
@@ -81,7 +82,7 @@ polig_num_sc <-
 
 
 # calculo modelo kmedias
-clusters_k <- kmeans(st_drop_geometry(polig_num), 10)
+clusters_k <- kmeans(st_drop_geometry(polig_num_sc), 10)
 
 (p2 <- ggplot() + 
   geom_sf(data=polig_num, aes(fill = factor(clusters_k$cluster))) + 
@@ -92,10 +93,10 @@ clusters_k <- kmeans(st_drop_geometry(polig_num), 10)
 
 # calculo modelo jerarquico
 
-clusters_hier <- cutree(hclust(dist(polig_num)), k = 10)
+clusters_hier <- cutree(hclust(dist(polig_num_sc)), k = 10)
 
 (p3 <- ggplot() + 
-  geom_sf(data=polig_num, aes(fill = factor(clusters_hier))) + 
+  geom_sf(data=polig_num_sc, aes(fill = factor(clusters_hier))) + 
   theme_minimal() +
   theme(legend.title = element_blank(), 
           legend.position = "bottom") )
@@ -103,7 +104,7 @@ clusters_hier <- cutree(hclust(dist(polig_num)), k = 10)
 
 # regionalizacion ----
 
-regiones_hier <- cutree(regionalization(polig_num, pesos_espaciales), k = 10)
+regiones_hier <- cutree(regionalization(polig_num_sc, pesos_espaciales), k = 10)
 
 (p4 <- ggplot() + 
   geom_sf(data=polig_num, aes(fill = factor(regiones_hier))) + 

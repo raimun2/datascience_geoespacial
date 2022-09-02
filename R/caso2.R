@@ -44,11 +44,11 @@ plotRGB(LC, r = 5, g = 4, b = 3, stretch = "lin")
 # recortamos extension de la imagen
 
 # definimos fronteras (extent)
-ext <- extent(c(350638, 358235,  6299157, 6304228))
+ext <- extent(c(356985, 367485,  6291205, 6303485))
 # recortamos
 LC_crop <- crop(x = LC, y = ext, snap="out")
 # visualizamos
-plotRGB(LC_crop, r = 4, g = 3, b = 2, stretch = "lin")
+plotRGB(LC_crop, r = 4, g = 3, b = 2, stretch = "hist")
 
 
 
@@ -57,7 +57,7 @@ plotRGB(LC_crop, r = 4, g = 3, b = 2, stretch = "lin")
 ### proyeccion geografica longlat
 crs_ll <- "+proj=longlat +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"
 # reproyectamos
-LC_ll <- projectRaster(LC, crs = crs_ll)
+LC_ll <- projectRaster(LC_crop, crs = crs_ll)
 # visualizamos
 plotRGB(LC_ll, r = 4, g = 3, b = 2, stretch = "hist")
 
@@ -65,7 +65,7 @@ plotRGB(LC_ll, r = 4, g = 3, b = 2, stretch = "hist")
 # Exploramos un canal
 
 # normalizamos los valores del canal 5 (x-mean)/sd
-infrared <- scale(LC[[5]])
+infrared <- scale(LC_crop[[5]])
 
 # dibujamos el infrarojo
 plot(infrared)
@@ -79,11 +79,12 @@ plot(nieve_IR)
 
 source("R/funciones_caso2.R")
 
-plot(NDSI(LC))
+plot(NDSI(LC_crop))
 
-nieve <- calc(NDSI(LC), fun = function(x) ifelse(x <= 0.9, NA, x))
+nieve <- calc(NDSI(LC_crop), fun = function(x) ifelse(x <= 0.9, NA, x))
 
 plot(nieve)
+
 
 
 # pasamos pixeles a poligonos
@@ -101,6 +102,7 @@ raster_poly <- data.frame(nieve =
                             raster::extract(nieve, 
                                             st_as_sf(poligonos_espectral), 
                                             fun=mean)) 
+
 # le asignamos al df las geometrias de los poligonos
 st_geometry(raster_poly) <- st_sfc(poligonos_espectral)
 
@@ -108,12 +110,12 @@ plot(raster_poly)
 
 LasCondes <- read_sf("data/shapefile/LasCondes.shp")
 
-plotRGB(LC, r=4, g=3, b=2, stretch = "hist")
+plotRGB(LC_crop, r=4, g=3, b=2, stretch = "hist")
 plot(LasCondes$geometry, add = TRUE)
 plot(raster_poly, add = TRUE)
 
 
 # visualizamos en mapa interactivo
 mapview(LasCondes, color = "#05A39B", alpha.region =0)+
-  viewRGB(LC, r = 4, g = 3, b = 2, na.color = "transparent") +
+  viewRGB(LC_crop, r = 4, g = 3, b = 2, na.color = "transparent") +
   mapview(raster_poly, na.color = "transparent") 

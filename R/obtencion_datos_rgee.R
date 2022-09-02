@@ -31,13 +31,10 @@ rgee_LC <- function(anio){
   # B5: NIR, B6: SWIR 1, B7: SWIR 2, B9: Cirrus
   
   # extraigo imagenes satelitales 
-  l8_img <<- ee_as_raster(
+  l8_img <- ee_as_raster(
     image = l8_bands,
     region = roi$bounds(),
     scale = 30)
-  
-  # nombro bandas
-  names(l8_img) <- c("aerosol","blue", "green", "red", "nir", "swir1", "swir2", "tir1" )
   
   # proyecto el raster en UTM
   LC_ll <- projectRaster(l8_img, 

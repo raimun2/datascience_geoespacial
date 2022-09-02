@@ -2,66 +2,26 @@
 
 ###################################
 
-plotRGB(LC_ll, r = 4, g = 3, b = 2, stretch = "hist")
-
-
-lasc <- read_sf("data/shapefile/LasCondes.shp")
-
-
-
-
-
 library(raster)
 library(mapview)
 library(sf)
 
-# Cargamos imagen satelital de las condes ----
+# Cargamos imagen satelital de las condes 2021 ----
 LC <- brick("data/landsat8_30m/l8_2021.tif")
-plotRGB(LC, r = 4, g = 3, b = 2, stretch = "hist")
 
-poligonos <- read_rds("data/MBHT_LC.rds") 
+# nombres a las bandas
+names(LC) 
 
-
-# Número de bandas asignado a la Imagen OLI Landsat
-# 
-# - aerosol = 1
-# - blue    = 2
-# - green   = 3
-# - red     = 4
-# - nir     = 5
-# - swir1   = 6
-# - swir2   = 7
-# - thermal  = 8
-
-# asigno nombres a las bandas
-names(LC) <- c("aerosol","blue", "green", "red", "nir", "swir1", "swir2", "tir1" )
-
-### utm utilizado a nivel regional (depende de la zona y hemisferio)
-crs_utm <- "+proj=utm +zone=19 +south +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"
-
-# Reproyección de Imagen  
-LC_ll <- projectRaster(LC, crs = crs_utm)
-
-# Mapeamos la imagen ----
-
-# Color Natural
-plotRGB(LC_ll, r = 4, g = 3, b = 2)
+names(LC) <- c("B1","B2", "B3", "B4", "B5", "B6", "B7", "B9" )
 
 # Color Natural con contraste lineal
-plotRGB(LC_ll, r = 4, g = 3, b = 2, stretch = "lin")
+plotRGB(LC, r = 4, g = 3, b = 2, stretch = "lin")
 
 # Color Natural con contraste de quiebres naturales
-plotRGB(LC_ll, r = 4, g = 3, b = 2, stretch = "hist")
+plotRGB(LC, r = 4, g = 3, b = 2, stretch = "hist")
 
-# recortamos extension de la imagen
-
-# definimos fronteras (extent)
-ext <- extent(c(350638, 358235,  6299157, 6304228))
-# recortamos
-LC_crop <- crop(x = LC_ll, y = ext, snap="out")
-# visualizamos
-plotRGB(LC_crop, r = 4, g = 3, b = 2, stretch = "lin")
-
+# Color Natural
+plotRGB(LC, r = 4, g = 3, b = 2)
 
 
 
@@ -71,24 +31,38 @@ plotRGB(LC_crop, r = 4, g = 3, b = 2, stretch = "lin")
 plotRGB(LC, r = 5, g = 4, b = 3, stretch = "lin")
 
 # Agricultura (6,5,2)
-plotRGB(LC, r = 6, g = 5, b = 2, stretch = "lin")
-
 # Penetración de la Radiación en la Atmósfera (7,6,5)
-plotRGB(LC, r = 7, g = 6, b = 5, stretch = "lin")
-
 # Uso del Suelo / Masas de Agua (5,6,4)
-plotRGB(LC, r = 5, g = 6, b = 4, stretch = "lin")
-
 # Infrarojo de Onda Corta (7,5,4)
-plotRGB(LC, r = 7, g = 5, b = 4, stretch = "lin")
-
 # Análisis de Vegetación (6,5,4)
-plotRGB(LC, r = 6, g = 5, b = 4, stretch = "lin")
-
 # Análisis de Vegetación Sana (5,6,2)
-plotRGB(LC, r = 5, g = 6, b = 2, stretch = "lin")
 
-# Exploramos el canal infrarojo
+
+
+# Manipulamos el raster ----
+
+# recortamos extension de la imagen
+
+# definimos fronteras (extent)
+ext <- extent(c(350638, 358235,  6299157, 6304228))
+# recortamos
+LC_crop <- crop(x = LC, y = ext, snap="out")
+# visualizamos
+plotRGB(LC_crop, r = 4, g = 3, b = 2, stretch = "lin")
+
+
+
+# Reproyectamos la Imagen  
+
+### proyeccion geografica longlat
+crs_ll <- "+proj=longlat +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"
+# reproyectamos
+LC_ll <- projectRaster(LC, crs = crs_ll)
+# visualizamos
+plotRGB(LC_ll, r = 4, g = 3, b = 2, stretch = "hist")
+
+
+# Exploramos un canal
 
 # normalizamos los valores del canal 5 (x-mean)/sd
 infrared <- scale(LC[[5]])
@@ -96,106 +70,50 @@ infrared <- scale(LC[[5]])
 # dibujamos el infrarojo
 plot(infrared)
 
-# extraemos zonas con infrarojo alto, que aproximan a la vegetacion
-vegetacion <- calc(infrared, fun = function(x) ifelse(x <= 3, NA, x))
+# extraemos zonas con infrarojo alto, que aproximan a nieve
+nieve_IR <- calc(infrared, fun = function(x) ifelse(x <= 4, NA, x))
 
-pal_green <- colorRampPalette(c("green","springgreen4", "darkgreen"))
-plot(vegetacion , col = pal_green( 200 ))
+plot(nieve_IR)
+
+# calculamos indices espectrales
+
+source("R/funciones_caso2.R")
+
+plot(NDSI(LC))
+
+nieve <- calc(NDSI(LC), fun = function(x) ifelse(x <= 0.9, NA, x))
+
+plot(nieve)
+
 
 # pasamos pixeles a poligonos
-poligonos_infrarojo <- 
-  rasterToPolygons(vegetacion, digits = 16) %>% 
+poligonos_espectral <- 
+  rasterToPolygons(nieve, digits = 16) %>% 
   st_as_sf() %>% 
   st_union() %>% # unimos vecinos
   st_cast("POLYGON")  # aislamos los poligonos resultantes
 
+plot(poligonos_espectral)
 
-plot(poligonos_infrarojo, pal = pal_green)
-
-# veamos que pasa al unirlos
-merged_poligonos_infrarojo <- poligonos_infrarojo  %>% 
-  
-
-plot(merged_poligonos_infrarojo, pal = pal_green)
-
-# st_union solo junta las geometrias, para unir los valores hay que ir un paso mas alla
 
 # extraemos los valores del raster original sobre cada poligono resultante y lo guardamos en un df
-vegetacion_poly <- data.frame(vegetacion = raster::extract(vegetacion, 
-                                                           st_as_sf(merged_poligonos_infrarojo), 
-                                                           fun=mean))
-
+raster_poly <- data.frame(nieve = 
+                            raster::extract(nieve, 
+                                            st_as_sf(poligonos_espectral), 
+                                            fun=mean)) 
 # le asignamos al df las geometrias de los poligonos
-st_geometry(vegetacion_poly) <- st_sfc(merged_poligonos_infrarojo)
+st_geometry(raster_poly) <- st_sfc(poligonos_espectral)
 
-# visualizamos
-plot(vegetacion_poly, pal = pal_green)
+plot(raster_poly)
 
-# agregar la frontera de Las Condes
-LasCondes <- sf::st_read("data/LasCondes.shp")
-plot(LasCondes$geometry)
-plot(vegetacion_poly, pal = pal_green, add = TRUE)
+LasCondes <- read_sf("data/shapefile/LasCondes.shp")
+
+plotRGB(LC, r=4, g=3, b=2, stretch = "hist")
+plot(LasCondes$geometry, add = TRUE)
+plot(raster_poly, add = TRUE)
+
 
 # visualizamos en mapa interactivo
-mview <- mapview(LasCondes, color = "#05A39B", alpha.region =0)+
+mapview(LasCondes, color = "#05A39B", alpha.region =0)+
   viewRGB(LC, r = 4, g = 3, b = 2, na.color = "transparent") +
-  mapview(vegetacion_poly, na.color = "transparent", col.regions = pal_green) 
-mview
-
-# guardamos el mapa como pagina html
-mapshot(x = mview, url = "mapa_veg.html")
-
-source("R/indices.R")
-
-veg <- NVDI(l8_img)
-
-agua <- calc(NDWI(l8_img), fun = function(x) ifelse(x <= 0.2, NA, x))
-
-png(file=paste0("Figuras/aculeo_anio",anio,".png"), width=500, height=600)
-plotRGB(l8_img, r=3, g=2, b=1, stretch = "lin")
-plot(agua, add = TRUE)
-dev.off()
-
-
-
-
-
-
-ggplot() + geom_sf(data=lasc)
-
-
-plot(lasc$geometry, add = TRUE)
-
-
-res(l8_img)
-
-LC <- brick("data/OLI_LC.tif")
-plotRGB(LC, r = 4, g = 3, b = 2, stretch = "lin")
-
-
-# indices espectrales ----
-
-# llamo funciones
-source("R/indices.R")
-
-veg <- NVDI(l8_img)
-
-plot(veg)
-
-
-
-
-plotRGB(LC_ll, r=4, g=3, b=2, stretch = "lin")
-plot(lasc$geometry, add = TRUE)
-
-
-funs <- lsf.str()
-
-for(i in 1:length(funs)){
-  png(file=paste0("Figuras/",funs[i],"_plot.png"), width=500, height=600)
-  plot(do.call(funs[i], list(l8_img)))
-  dev.off()
-}
-
-
-
+  mapview(raster_poly, na.color = "transparent") 

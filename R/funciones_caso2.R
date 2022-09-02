@@ -2,7 +2,7 @@ GCI <- function(rasterstack_l8){
   return(rasterstack_l8$B5/rasterstack_l8$B3 - 1)
 }
 
-NVDI <- function(rasterstack_l8){
+NDVI <- function(rasterstack_l8){
   return((rasterstack_l8$B5 - rasterstack_l8$B4)/(rasterstack_l8$B5 + rasterstack_l8$B4))
 }
 

@@ -1,0 +1,54 @@
+pacman::p_load(tidyverse, rgee, sf, raster)
+
+ee_Initialize(drive = T)
+
+# defino una region de interes ----
+roi <- 
+  c(-70.518333, -33.416667) %>%  # las condes
+  st_point(dim = "XYZ") %>% 
+  st_buffer(dist = 0.09) %>% 
+  sf_as_ee()
+
+# genero funcion que captura de imagenes satelitales por año ----
+rgee_LC <- function(anio){
+  
+  disponible <- ee$ImageCollection('LANDSAT/LC08/C01/T1_TOA')$
+    filterDate(paste0(anio,'-07-01'),paste0(anio,'-11-30'))$
+    filterBounds(roi)$
+    filterMetadata('CLOUD_COVER','less_than', 15)
+  
+  # ordeno las fechas
+  df_disponible <- ee_get_date_ic(disponible)%>%
+    arrange(time_start)
+  
+  # extraigo el id de la primera fecha
+  escena <- df_disponible$id[1]
+  
+  # defino las bandas que me interesa extraer
+  l8_bands <- ee$Image(escena)$select(c("B1", "B2", "B3", "B4", 
+                                        "B5", "B6", "B7", "B9"))
+  # B1: Aerosol, B2: Blue, B3: Green, B4: Red
+  # B5: NIR, B6: SWIR 1, B7: SWIR 2, B9: Cirrus
+  
+  # extraigo imagenes satelitales 
+  l8_img <<- ee_as_raster(
+    image = l8_bands,
+    region = roi$bounds(),
+    scale = 30)
+  
+  # nombro bandas
+  names(l8_img) <- c("aerosol","blue", "green", "red", "nir", "swir1", "swir2", "tir1" )
+  
+  # proyecto el raster en UTM
+  LC_ll <- projectRaster(l8_img, 
+                         crs = "+proj=utm +zone=19 +south +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0")
+  
+  # cargo toda la data en memoria
+  LC_ll <- readAll(LC_ll)
+  
+  # guardo raster en carpeta
+  writeRaster(LC_ll, filename=paste0("data/landsat8_30m/l8_",anio,".tif"), format="GTiff", overwrite=TRUE)
+  
+}
+
+purrr::map(2013:2021, rgee_LC)

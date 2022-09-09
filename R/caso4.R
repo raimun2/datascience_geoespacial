@@ -1,17 +1,15 @@
 ### Calculo de Hotspots de Violencia ----
 
 # Cargar Librerias
-pacman::p_load(rgdal, rgeos, stars, spatstat, spdep, sf, raster,
-               spatialreg, tidyverse, gstat, MASS, patchwork)
+pacman::p_load(tidyverse, sf, MASS, gstat, raster, 
+               spdep, spatialreg, patchwork)
 
-#source("R/funciones_caso4.R")
 
-#mbht <- read_rds("data/MBHT_LC.rds")
 # ***************************
 # Cargar y ordenar datos ----
 
 # manzanas las condes
-mz_lc <- readRDS("data/manzanas_lc.rds") 
+mz_lc <- read_rds("data/manzanas_lc.rds") 
 
 # verificamos proyeccion
 st_crs(mz_lc)
@@ -22,20 +20,14 @@ violencia <- read_rds("data/casos_violencia.rds")
 # verificamos proyeccion
 st_crs(violencia)
 
-mz_lc <- readRDS("data/manzanas_lc.rds") 
+mz_lc <- readRDS("data/manzanas_lc.rds") %>% 
+  filter(pob > 0)
 
 # Cargar datos censales de nivel educativo en Las Condes a nivel de personas
 censo_lc <- readRDS("data/censo_lc.rds") %>% 
-  mutate(poblacion = 1,
-         CODINE011 = as.character(IDMZ)) %>% 
+  mutate(CODINE011 = as.character(IDMZ)) %>% 
   dplyr::select(-IDMZ) 
 
-
-# Calcular poblacion por manzana
-poblacion <- 
-  censo_lc %>% 
-  group_by(CODINE011) %>% 
-  summarise(poblacion = sum(poblacion)) 
 
 # Calcular Nivel Educacional de jefes de hogar por manzana
 nived <- censo_lc %>% 
@@ -46,20 +38,16 @@ nived <- censo_lc %>%
 # Cargar Poligonos de Manzanas de Las Condes (Censo 2012)
 # acoplar con datos de nivel educacional a manzanas
 mz_lc <- mz_lc %>% 
-  left_join(poblacion, by = "CODINE011") %>% 
   left_join(nived, by = "CODINE011") %>% 
   mutate(area = st_area(.)/10000,
-         densidad = poblacion/area,
+         densidad = pob/area,
          violencia = lengths(st_intersects(geometry, violencia))) %>% 
   drop_na() 
-
-
 
 # visualizamos
 ggplot() +
   geom_sf(data = mz_lc) + 
   geom_sf(data = violencia) 
-
 
 
 # *************************

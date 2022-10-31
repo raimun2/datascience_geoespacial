@@ -1,13 +1,3 @@
-# spatial_weights <-  function(city_df, nvec = 12,
-#                              style = "W", longlat = F){
-#   nb <- spdep::nb2listw(neighbours = spdep::knn2nb(
-#     knn = spdep::knearneigh( x = city_df, k = nvec, longlat = F)), 
-#     style = style)
-#   return(nb)
-# }
-
-
-
 # funcion para transformar un objeto sf de poligonos desprolijos en una lista de vecinos
 # hay 2 metodos, por interseccion con buffer o por limite de un radio 
 # (utiliza el inverso de la distancia dentro de ese buffer)

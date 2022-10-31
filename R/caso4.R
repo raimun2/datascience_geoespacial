@@ -1,15 +1,21 @@
 ### Calculo de Hotspots de Violencia ----
 
 # Cargar Librerias
-pacman::p_load(tidyverse, sf, MASS, gstat, raster, 
-               spdep, spatialreg, patchwork)
-
+library(tidyverse)
+library(sf)
+library(MASS)
+library(gstat)
+library(raster)
+library(spdep)
+library(spatialreg)
+library(patchwork)
 
 # ***************************
 # Cargar y ordenar datos ----
 
 # manzanas las condes
-mz_lc <- read_rds("data/manzanas_lc.rds") 
+mz_lc <- read_rds("data/MBHT_LC.rds") %>% 
+  filter(PERSONAS > 0)
 
 # verificamos proyeccion
 st_crs(mz_lc)
@@ -20,8 +26,6 @@ violencia <- read_rds("data/casos_violencia.rds")
 # verificamos proyeccion
 st_crs(violencia)
 
-mz_lc <- readRDS("data/manzanas_lc.rds") %>% 
-  filter(pob > 0)
 
 # Cargar datos censales de nivel educativo en Las Condes a nivel de personas
 censo_lc <- readRDS("data/censo_lc.rds") %>% 
@@ -40,7 +44,7 @@ nived <- censo_lc %>%
 mz_lc <- mz_lc %>% 
   left_join(nived, by = "CODINE011") %>% 
   mutate(area = st_area(.)/10000,
-         densidad = pob/area,
+         densidad = PERSONAS/area,
          violencia = lengths(st_intersects(geometry, violencia))) %>% 
   drop_na() 
 
@@ -87,7 +91,7 @@ plot(idw, col = viridis::viridis(100), main='Densidad de Delitos KNN')
 mz_point <- mz_lc %>%
   st_centroid()
 
-formMod <- EDUC ~ 1
+formMod <- violencia ~ 1
 variog_empirico <- variogram(formMod, mz_point)
 
 variog_teorico <- fit.variogram(variog_empirico, 

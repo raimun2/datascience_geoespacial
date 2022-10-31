@@ -168,13 +168,13 @@ También se pude instalar librerías del Panel “Packages”
 
 ### Ejecutar codigo
 
-Para ejecutar una linea de codigo debe seleccionarla y apretar
+Para ejecutar una línea de código debe seleccionarla y apretar
 Ctrl+Enter
 
-Al hacerlo se vera la instruccion en la consola. Algunas lineas de
-codigo modifican o crean variables, y otras lineas de codigo generan
-direcetamente un output, imprimiendo en la consola el resultado o
-generando algun grafico
+Al hacerlo se vera la instrucción en la consola. Algunas líneas de
+código modifican o crean variables, y otras líneas de código generan
+directamente un output, imprimiendo en la consola el resultado o
+generando algún grafico
 
 ``` r
 # esto es un comentario 
@@ -191,6 +191,39 @@ print(resultado_de_una_suma)
 plot(resultado_de_una_suma)
 ```
 
+## Tarea asincrónica
+
+-   Paso 1: Abra el proyecto modelamiento_territorial.Rproj que acaba de
+    descargar
+
+-   Paso 2: En la pestaña File, crear un nuevo script de R y guardarlo
+    como nombre_apellido.R
+
+-   Paso 3: Copie el codigo a continuacion y peguelo en su script (debe
+    guardarlo en la carpeta R de este mismo proyecto)
+
+``` r
+# cargamos las librerias (deben haberlas instalado previamente)
+library(tidyverse)
+library(sf)
+
+# leemos datos de la MBHT de Las Condes
+poligonos = read_rds("data/MBHT_LC.rds") 
+
+# imprimimos en la consola los nombres de las columnas
+names(poligonos)
+
+# generamos un grafico con el ibt como variable de relleno
+ggplot(data=poligonos) + 
+  aes(fill = ibt) +
+  geom_sf()
+```
+
+-   Paso 4: Cambie la linea donde dice fill = ibt, y seleccione otra
+    variable diferente de ibt, y generar otro grafico.
+
+![](readme_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
+
 ### Referencias
 
 Página Web Oficial R <https://www.r-project.org>  
@@ -199,5 +232,4 @@ Página Rstudio <https://rstudio.com>
 ### Contactos
 
 **Raimundo Sanchez**  
-Universidad Adolfo Ibañez <raimundo.sanchez@uai.cl>  
-rrss: @raimun2
+Universidad Adolfo Ibañez

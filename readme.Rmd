@@ -23,7 +23,6 @@ R es un lenguaje de computación estadística (statistical computing), de códig
 Al ser un lenguaje de programación, en lugar de una herramienta con una interfaz de usuario, es muy rápido y eficiente para ejecutar cálculos, pero requiere que el usuario tenga una alta capacidad de abstracción para ordenar las tareas en las líneas de código.
 
 
-<br> <br>
 
 ### ¿Qué es RStudio? 
 
@@ -46,7 +45,6 @@ Cabe señalar que cada cuadrante tiene pestañas adicionales con otras funcional
 <center>![](img/rstudio-editor.png){width="90%"}</center>
 
 
-<br>
 
 ### Instalación de R
 
@@ -56,7 +54,6 @@ En el proceso de instalación se pregunta sobre idioma, cuya decisión es libre,
 
 <center>![](img/cran_rstudio.png){width="60%"}</center>
 
-<br>
 
 #### Instalación de R para Windows
 
@@ -67,7 +64,6 @@ En el proceso de instalación se pregunta sobre idioma, cuya decisión es libre,
 
 <center>![](img/install_r_mac.gif){width="90%"}</center>
 
-<br>
 
 #### Instalación de R para Linux
 
@@ -89,7 +85,6 @@ RStudio puede ser descargado directamente de la su página oficial <https://rstu
 
 Se aconseja revisar las siguiente documentación en el siguiente [link](https://b-rodrigues.github.io/modern_R/getting-to-know-rstudio.html), donde se explicativa diferentes paneles de Rstudio de manera gráfica.
 
-<br> <br>
 
 ### R Projects
 
@@ -189,8 +184,4 @@ ggplot(data=poligonos) +
 
 Página Web Oficial R <https://www.r-project.org>\
 Página Rstudio <https://rstudio.com>\
-
-### Contactos
-
-**Raimundo Sanchez**\
-Universidad Adolfo Ibañez 
+Pagina libro de R para Data Science <https://es.r4ds.hadley.nz/>\

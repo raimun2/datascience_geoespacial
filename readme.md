@@ -20,8 +20,6 @@ interfaz de usuario, es muy rápido y eficiente para ejecutar cálculos,
 pero requiere que el usuario tenga una alta capacidad de abstracción
 para ordenar las tareas en las líneas de código.
 
-<br> <br>
-
 ### ¿Qué es RStudio?
 
 RStudio es un editor de código de R open source, y es el más utilizado
@@ -52,8 +50,6 @@ funcionalidades.
 <img src="img/rstudio-editor.png" style="width:90.0%" />
 </center>
 
-<br>
-
 ### Instalación de R
 
 Para instalar R se sugiere hacerlo desde el respositorio CRAN (The
@@ -71,8 +67,6 @@ se busque documentación en la web o libros sobre algún eventuales
 <img src="img/cran_rstudio.png" style="width:60.0%" />
 </center>
 
-<br>
-
 #### Instalación de R para Windows
 
 <center>
@@ -84,8 +78,6 @@ se busque documentación en la web o libros sobre algún eventuales
 <center>
 <img src="img/install_r_mac.gif" style="width:90.0%" />
 </center>
-
-<br>
 
 #### Instalación de R para Linux
 
@@ -112,8 +104,6 @@ seleccionar el sistema operativo que corresponde.
 Se aconseja revisar las siguiente documentación en el siguiente
 [link](https://b-rodrigues.github.io/modern_R/getting-to-know-rstudio.html),
 donde se explicativa diferentes paneles de Rstudio de manera gráfica.
-
-<br> <br>
 
 ### R Projects
 
@@ -228,8 +218,4 @@ ggplot(data=poligonos) +
 
 Página Web Oficial R <https://www.r-project.org>  
 Página Rstudio <https://rstudio.com>  
-
-### Contactos
-
-**Raimundo Sanchez**  
-Universidad Adolfo Ibañez
+Pagina libro de R para Data Science <https://es.r4ds.hadley.nz/>  

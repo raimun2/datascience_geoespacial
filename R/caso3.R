@@ -7,17 +7,17 @@ library(tidyverse)
 library(osmdata)
 
 # leemos poligonos de Las Condes
-poligonos <- read_rds("data/MBHT_LC.rds") 
-LasCondes <- read_sf("data/shapefile/LasCondes.shp")
+poligonos = read_rds("data/MBHT_LC.rds") 
+LasCondes = read_sf("data/shapefile/LasCondes.shp")
 
 # leemos direcciones
-direcciones <- read_csv("data/direcciones.csv")
+direcciones = read_csv("data/direcciones.csv")
 
 #exploramos listado
 direcciones
 
 # intentamos georeferenciar direcciones asi tal como vienen
-p1 <- geo(direcciones$DIRECCION, method="arcgis")
+p1 = geo(direcciones$DIRECCION, method="arcgis")
 
 # vemos los resultados preliminares
 p1 %>% summary()
@@ -28,7 +28,7 @@ p1 %>% drop_na() %>%
   mapview(legend = FALSE)
 
 # agregamos el nombre de la comuna de las condes al texto de busqueda
-p2 <- geo(paste0(direcciones$DIRECCION," Las Condes"), method="arcgis") 
+p2 = geo(paste0(direcciones$DIRECCION," Las Condes"), method="arcgis") 
 
 # vemos si hay cambios respecto a p1
 p2 %>% summary()
@@ -39,13 +39,13 @@ p2 %>% drop_na() %>%
   mapview(legend = FALSE)
 
 # intentamos agregando el nombre de Chile tambien
-p3 <- geo(paste0(direcciones$DIRECCION," Las Condes, Chile"), method="arcgis") 
+p3 = geo(paste0(direcciones$DIRECCION," Las Condes, Chile"), method="arcgis") 
 
 # vemos las estadisticas descriptivas
 p3 %>% summary()
 
 # generamos objeto espacial con la misma CRS que el objeto base
-p3_sf <- p3 %>% 
+p3_sf = p3 %>% 
   st_as_sf(coords = c("long", "lat"), crs = 4326) %>% 
   st_transform(st_crs(poligonos)) 
 
@@ -55,29 +55,29 @@ p3_sf %>% mapview(legend = FALSE)
 # validar la georeferencia ----
 
 # hacemos geocoding inverso, para validar las direcciones
-dirs_rev <- reverse_geocode(p3, lat = lat, long = long,  method = "arcgis")
+dirs_rev = reverse_geocode(p3, lat = lat, long = long,  method = "arcgis")
 
 # vemos las diferencias en el texto de las direcciones
-dirs_rev$diferencias <- mapply(adist, dirs_rev$address...4, dirs_rev$address...1)
+dirs_rev$diferencias = mapply(adist, dirs_rev$address...4, dirs_rev$address...1)
 
 hist(dirs_rev$diferencias)
 
 
 # limpiamos un poco
 # quitamos el numero de departamento de las direcciones y preservamos casos unicos
-dirs_dp <- sub(" DP.*", "", direcciones$DIRECCION) %>% unique()
+dirs_dp = sub(" DP.*", "", direcciones$DIRECCION) %>% unique()
 
 # geocodificamos valores unicos
-p4 <- geo(paste0(dirs_dp," Las Condes, Chile"), method="arcgis") %>% as_tibble()
+p4 = geo(paste0(dirs_dp," Las Condes, Chile"), method="arcgis") %>% as_tibble()
 
 # geocoding inverso nuevamente
-dirs_rev2 <- reverse_geocode(p4, lat = lat, long = long,  method = "arcgis")
+dirs_rev2 = reverse_geocode(p4, lat = lat, long = long,  method = "arcgis")
 
 # quitamos las unidades superiores para comparar solo nombre de calle y numero
-dirs_rev2$dir4 <- gsub(", Las Condes, Santiago, Región Metropolitana de Santiago, 7550000, CHL", "", dirs_rev2$address...4)
+dirs_rev2$dir4 = gsub(", Las Condes, Santiago, Región Metropolitana de Santiago, 7550000, CHL", "", dirs_rev2$address...4)
 
 # volvemos a calcular las diferencias
-dirs_rev2$diferencias <- mapply(adist, dirs_rev2$dir4, dirs_dp)
+dirs_rev2$diferencias = mapply(adist, dirs_rev2$dir4, dirs_dp)
 
 hist(dirs_rev2$diferencias)
 
@@ -89,11 +89,11 @@ hist(dirs_rev2$diferencias)
 # hay recursos que son puntos, como las juntas de vecinos
 
 # podemos calcular la distancia de cada poligono a cada junta de vecinos
-distancia_puntos <- st_distance(poligonos, p3_sf)
+distancia_puntos = st_distance(poligonos, p3_sf)
 
 # preservamos la menor distancia para asociar una manzana a una JJVV
 # generamos indicador de accesibilidad a jjvv
-poligonos <- 
+poligonos = 
   poligonos %>% 
   mutate(acc_JJVV = apply(distancia_puntos, 1, function(x) min(x)))
 
@@ -109,13 +109,13 @@ ggplot() +
 # (asumiremos que por estas pasa el transporte publico)
 
 # identificamos el bbox de las condes
-LC_bbox <- getbb("Las Condes, Santiago, Chile")
+LC_bbox = getbb("Las Condes, Santiago, Chile")
 
 # vemos las categorias presentes en la libreria OSM
 available_tags("highway")
 
 # extraigo las calles principales y sus nodos desde OSM
-LC_hway <- opq(LC_bbox) %>% # identifico bbox
+LC_hway = opq(LC_bbox) %>% # identifico bbox
   add_osm_feature( # agrego atributo del listado anterior
     key = "highway",
     value = c("motorway", "primary", "motorway_link", "primary_link") # se pueden agregar despues secondary terciary available
@@ -129,7 +129,7 @@ mapview(LC_hway)
 
 
 # extramos solo las calles que intersectan con las condes
-calles_LC <- 
+calles_LC = 
   LC_hway %>% # tomamos toda la base
   filter(LC_hway %>%  #fitramos cuando hay interseccion entre las calles y 
            st_intersects(LasCondes %>% # el poligono del perimetro de las condes
@@ -144,10 +144,10 @@ calles_LC <-
 mapview(calles_LC)
 
 # calculamos distancias a cada linea
-distancia_calles <- st_distance(poligonos, calles_LC)
+distancia_calles = st_distance(poligonos, calles_LC)
 
 # generamos indicador de accesibilidad a ttpp
-poligonos <- 
+poligonos = 
   poligonos %>% 
   mutate(acc_TTPP = apply(distancia_calles, 1, function(x) min(x)))
 

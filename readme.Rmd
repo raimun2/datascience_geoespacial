@@ -14,7 +14,7 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ### ¿Qué es R?
 
-![](img/rlogo.png){width="10%"}
+![](img/Rlogo.png){width="10%"}
 
 
 
@@ -144,6 +144,30 @@ plot(resultado_de_una_suma)
 
 ```
 
+Tarea asincronica
+
+- Paso 1: en la pestaña File, crear un nuevo script de R y guardarlo como nombre_apellido.R
+
+- Paso 2: copiar y pegar este codigo en su script (debe guardarlo en la carpeta R de este mismo proyecto)
+
+```{r}
+# cargamos las librerias (deben haberlas instalado previamente)
+library(tidyverse)
+library(sf)
+
+# leemos datos de la MBHT de Las Condes
+poligonos = read_rds("data/MBHT_LC.rds") 
+
+# imprimimos en la consola los nombres de las columnas
+names(poligonos)
+
+ggplot(data=poligonos) + 
+  aes(fill = ibt) +
+  geom_sf()
+
+```
+
+- Paso 3: Cambiar la linea donde dice fill = ibt, y seleccionar alguna variable diferente de ibt, y generar otro grafico.
 
 ### Referencias
 

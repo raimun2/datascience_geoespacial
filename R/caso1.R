@@ -8,7 +8,7 @@ set.seed(42)
 source("R/funciones_caso1.R")
 
 # cargar datos y explorarlos
-poligonos <- read_rds("data/MBHT_LC.rds") 
+poligonos = read_rds("data/MBHT_LC.rds") 
 
 # vemos los nombres de las variables
 names(poligonos)
@@ -23,7 +23,7 @@ ggplot() +
 
 # calculo de pesos espaciales
 
-pesos_espaciales <- poly2listw(poligonos)
+pesos_espaciales = poly2listw(poligonos)
 
 plot(pesos_espaciales, coords = st_coordinates(st_centroid(poligonos)), col='red')
 
@@ -45,18 +45,18 @@ ggplot() +
 # Autocorrelacion de Moran ----
 
 # Moran global de la variable ibt
-I <- moran(poligonos$ibt, pesos_espaciales, nrow(poligonos), Szero(pesos_espaciales))
+I = moran(poligonos$ibt, pesos_espaciales, nrow(poligonos), Szero(pesos_espaciales))
 I
 
 moran.test(poligonos$ibt,pesos_espaciales, alternative="greater")
 
-variable <- poligonos$ibt
+variable = poligonos$ibt
 
 # Moran local y significancia
 
-corr_local <- cuadrant_moran(poligonos$ibt, pesos_espaciales)
+corr_local = cuadrant_moran(poligonos$ibt, pesos_espaciales)
 
-(p1 <- ggplot() + 
+(p1 = ggplot() + 
   geom_sf(data=poligonos, aes(fill = corr_local$cuadrant)) + 
   theme_minimal() +
   theme(legend.title = element_blank(), 
@@ -68,7 +68,7 @@ corr_local <- cuadrant_moran(poligonos$ibt, pesos_espaciales)
 
 # extraigo variables numericas
 
-polig_num <- 
+polig_num = 
   poligonos %>% 
   select(ibt:E65YMAS) %>% 
   drop_na() %>% 
@@ -76,15 +76,15 @@ polig_num <-
 
 # escalo las variables
 
-polig_num_sc <- 
+polig_num_sc = 
   polig_num %>% 
   mutate(across(where(is.numeric), ~ as.numeric(scale(.))))
 
 
 # calculo modelo kmedias
-clusters_k <- kmeans(st_drop_geometry(polig_num_sc), 10)
+clusters_k = kmeans(st_drop_geometry(polig_num_sc), 10)
 
-(p2 <- ggplot() + 
+(p2 = ggplot() + 
   geom_sf(data=polig_num, aes(fill = factor(clusters_k$cluster))) + 
   theme_minimal() +
   theme(legend.title = element_blank(), 
@@ -93,9 +93,9 @@ clusters_k <- kmeans(st_drop_geometry(polig_num_sc), 10)
 
 # calculo modelo jerarquico
 
-clusters_hier <- cutree(hclust(dist(polig_num_sc)), k = 10)
+clusters_hier = cutree(hclust(dist(polig_num_sc)), k = 10)
 
-(p3 <- ggplot() + 
+(p3 = ggplot() + 
   geom_sf(data=polig_num_sc, aes(fill = factor(clusters_hier))) + 
   theme_minimal() +
   theme(legend.title = element_blank(), 
@@ -104,9 +104,9 @@ clusters_hier <- cutree(hclust(dist(polig_num_sc)), k = 10)
 
 # regionalizacion ----
 
-regiones_hier <- cutree(regionalization(polig_num_sc, pesos_espaciales), k = 10)
+regiones_hier = cutree(regionalization(polig_num_sc, pesos_espaciales), k = 10)
 
-(p4 <- ggplot() + 
+(p4 = ggplot() + 
   geom_sf(data=polig_num, aes(fill = factor(regiones_hier))) + 
   theme_minimal() +
   theme(legend.title = element_blank(), 

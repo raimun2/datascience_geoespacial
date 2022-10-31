@@ -7,7 +7,7 @@ Raimundo Sanchez
 
 ### ¿Qué es R?
 
-<img src="img/rlogo.png" style="width:10.0%" />
+<img src="img/Rlogo.png" style="width:10.0%" />
 
 R es un lenguaje de computación estadística (statistical computing), de
 código abierto y de uso libre. Está diseñado para trabajar con datos, y

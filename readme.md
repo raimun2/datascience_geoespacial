@@ -147,7 +147,10 @@ Para instalar librerías se puede hacer directamente desde la consola de
 RStudio, por ejemplo:
 
 ``` r
-install.packages(c("dplyr","ggplot2", "tidyverse","sf")) # Se puede instalar más de una librería a la vez
+# Se puede instalar más de una librería a la vez
+install.packages(c("dplyr", "ggplot2", "tidyverse", "sf", "MASS", 
+                   "gstat", "raster", "spdep", "spatialreg", 
+                   "patchwork", "tidygeocoder", "mapview", "osmdata"))
 ```
 
 También se pude instalar librerías del Panel “Packages”

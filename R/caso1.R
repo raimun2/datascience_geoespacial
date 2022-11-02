@@ -2,6 +2,8 @@
 library(tidyverse)
 library(sf)
 library(spdep)
+library(patchwork)
+
 set.seed(42)
 
 # cargar funciones para el curso
@@ -113,7 +115,5 @@ regiones_hier = cutree(regionalization(polig_num_sc, pesos_espaciales), k = 10)
         legend.position = "bottom") )
 
 # junto todos los graficos
-
-library(patchwork)
 
 (p1 + p2) / (p3 + p4)

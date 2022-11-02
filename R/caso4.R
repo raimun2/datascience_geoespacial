@@ -29,24 +29,24 @@ st_crs(violencia)
 
 # Cargar datos censales de nivel educativo en Las Condes a nivel de personas
 censo_lc = readRDS("data/censo_lc.rds") %>% 
-  mutate(CODINE011 = as.character(IDMZ)) %>% 
+  mutate(ID_MANZ = as.character(IDMZ)) %>% 
   dplyr::select(-IDMZ) 
 
 
 # Calcular Nivel Educacional de jefes de hogar por manzana
 nived = censo_lc %>% 
   filter(DSOST==1) %>%  # Filtar sostenedores
-  group_by(CODINE011) %>% 
+  group_by(ID_MANZ) %>% 
   summarise(EDUC = mean(EDUC))
 
 # Cargar Poligonos de Manzanas de Las Condes (Censo 2012)
 # acoplar con datos de nivel educacional a manzanas
 mz_lc = mz_lc %>% 
-  left_join(nived, by = "CODINE011") %>% 
+  left_join(nived, by = "ID_MANZ") %>% 
   mutate(area = st_area(.)/10000,
+         EDUC = ifelse(is.na(EDUC),0,EDUC),
          densidad = PERSONAS/area,
-         violencia = lengths(st_intersects(geometry, violencia))) %>% 
-  drop_na() 
+         violencia = lengths(st_intersects(geometry, violencia))) 
 
 # visualizamos
 ggplot() +
@@ -123,10 +123,12 @@ summary(modviol)
 
 ## Crear matriz de pesos espaciales
 nb = nb2listw(neighbours = knn2nb(
-  knn = knearneigh(x = mz_point, k = 12)), 
+  knn = knearneigh(x = mz_point, k = 15)), 
   style = "W")
 
 # Modelos de regresion espacial
+
+summary(mz_point)
 
 #Error espacial
 fit.errdurb = errorsarlm(violencia ~ log(densidad) + EDUC, data = mz_point, 

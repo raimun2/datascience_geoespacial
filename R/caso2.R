@@ -20,10 +20,6 @@ plotRGB(LC, r = 4, g = 3, b = 2, stretch = "lin")
 # Color Natural con contraste de quiebres naturales
 plotRGB(LC, r = 4, g = 3, b = 2, stretch = "hist")
 
-# Color Natural
-plotRGB(LC, r = 4, g = 3, b = 2)
-
-
 
 # Visualizamos falso color ----
 

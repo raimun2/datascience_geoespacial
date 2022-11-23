@@ -50,10 +50,7 @@ plotRGB(LC_crop, r = 4, g = 3, b = 2, stretch = "hist")
 
 # Reproyectamos la Imagen  
 
-### proyeccion geografica longlat
-crs_ll = "+proj=longlat +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0"
-# reproyectamos
-LC_ll = projectRaster(LC_crop, crs = crs_ll)
+LC_ll = projectRaster(LC_crop, crs = 4326) ### 4326 corresponde a la proyeccion geografica longlat
 # visualizamos
 plotRGB(LC_ll, r = 4, g = 3, b = 2, stretch = "hist")
 
@@ -115,3 +112,4 @@ plot(raster_poly, add = TRUE)
 mapview(LasCondes, color = "#05A39B", alpha.region =0)+
   viewRGB(LC_crop, r = 4, g = 3, b = 2, na.color = "transparent") +
   mapview(raster_poly, na.color = "transparent") 
+

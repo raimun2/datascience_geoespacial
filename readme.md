@@ -1,7 +1,6 @@
-Tarea asincrónica Modelamiento Territorial
+Instalacion de software para curso Modelamiento Territorial
 ================
 Raimundo Sanchez
-02-11-2022
 
 ## Instalación de R y RStudio
 
@@ -29,19 +28,19 @@ más fácil.
 
 La interfaz de RStudio se divide en 4 cuadrantes:
 
--   Izquierda superior: El editor de código propiamente tal. El código
-    se escribe en archivos de texto plano que tienen extensión .R, de
-    manera de poder reproducir los análisis que vayamos realizando.
+- Izquierda superior: El editor de código propiamente tal. El código se
+  escribe en archivos de texto plano que tienen extensión .R, de manera
+  de poder reproducir los análisis que vayamos realizando.
 
--   Derecha superior: Environment, o entorno de trabajo, en este
-    cuadrante se van visualizando todos los datos que vamos utilizando
-    en nuestro análisis.
+- Derecha superior: Environment, o entorno de trabajo, en este cuadrante
+  se van visualizando todos los datos que vamos utilizando en nuestro
+  análisis.
 
--   Derecha inferior: Ventana de salida, acá se visualizan los gráficos
-    resultantes de nuestros análisis.
+- Derecha inferior: Ventana de salida, acá se visualizan los gráficos
+  resultantes de nuestros análisis.
 
--   Izquierda inferior: Consola, acá es donde se muestra el resultado de
-    la ejecución de cada línea de código.
+- Izquierda inferior: Consola, acá es donde se muestra el resultado de
+  la ejecución de cada línea de código.
 
 Cabe señalar que cada cuadrante tiene pestañas adicionales con otras
 funcionalidades.
@@ -183,39 +182,6 @@ print(resultado_de_una_suma)
 # ploteamos 
 plot(resultado_de_una_suma)
 ```
-
-## Tarea asincrónica
-
--   Paso 1: Abra el proyecto modelamiento_territorial.Rproj que acaba de
-    descargar
-
--   Paso 2: En la pestaña File, crear un nuevo script de R y guardarlo
-    como nombre_apellido.R
-
--   Paso 3: Copie el codigo a continuacion y peguelo en su script (debe
-    guardarlo en la carpeta R de este mismo proyecto)
-
-``` r
-# cargamos las librerias (deben haberlas instalado previamente)
-library(tidyverse)
-library(sf)
-
-# leemos datos de la MBHT de Las Condes
-poligonos = read_rds("data/MBHT_LC.rds") 
-
-# imprimimos en la consola los nombres de las columnas
-names(poligonos)
-
-# generamos un grafico con el ibt como variable de relleno
-ggplot(data=poligonos) + 
-  aes(fill = ibt) +
-  geom_sf()
-```
-
--   Paso 4: Cambie la linea donde dice fill = ibt, y seleccione otra
-    variable diferente de ibt, y generar otro grafico.
-
-![](readme_files/figure-gfm/unnamed-chunk-5-1.png)<!-- -->
 
 ### Referencias
 

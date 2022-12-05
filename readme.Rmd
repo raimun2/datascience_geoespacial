@@ -1,7 +1,6 @@
 ---
-title: "Tarea asincrónica Modelamiento Territorial"
+title: "Instalacion de software para curso Modelamiento Territorial"
 author: "Raimundo Sanchez"
-date: "02-11-2022"
 output: github_document
 ---
 
@@ -142,45 +141,6 @@ print(resultado_de_una_suma)
 # ploteamos 
 plot(resultado_de_una_suma)
 
-```
-
-## Tarea asincrónica
-
-- Paso 1: Abra el proyecto modelamiento_territorial.Rproj que acaba de descargar
-
-- Paso 2: En la pestaña File, crear un nuevo script de R y guardarlo como nombre_apellido.R
-
-- Paso 3: Copie el codigo a continuacion y peguelo en su script (debe guardarlo en la carpeta R de este mismo proyecto)
-
-```{r, eval=FALSE}
-# cargamos las librerias (deben haberlas instalado previamente)
-library(tidyverse)
-library(sf)
-
-# leemos datos de la MBHT de Las Condes
-poligonos = read_rds("data/MBHT_LC.rds") 
-
-# imprimimos en la consola los nombres de las columnas
-names(poligonos)
-
-# generamos un grafico con el ibt como variable de relleno
-ggplot(data=poligonos) + 
-  aes(fill = ibt) +
-  geom_sf()
-
-```
-
-- Paso 4: Cambie la linea donde dice fill = ibt, y seleccione otra variable diferente de ibt, y generar otro grafico.
-
-```{r, echo=FALSE, warning=FALSE, message=FALSE}
-library(tidyverse)
-library(sf)
-
-poligonos = read_rds("data/MBHT_LC.rds") 
-
-ggplot(data=poligonos) + 
-  aes(fill = ibt) +
-  geom_sf()
 ```
 
 

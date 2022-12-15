@@ -46,8 +46,6 @@ p + c(1,2) #sumo diferentes valores por coordenadas
 p + p # sumo 2 veces el mismo vector
 p * p # multiplico cada valor por si mismo
 
-# creo una funcion de rotacion
-
 
 puntos <- read_rds("data/puntos.rds")
 

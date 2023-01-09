@@ -18,7 +18,7 @@ disponible <- ee$ImageCollection('LANDSAT/LC08/C01/T1_TOA')$
   filterMetadata('CLOUD_COVER','less_than', 15)
 
 # ordeno las fechas
-df_disponible <- ee_get_date_ic(disponible)%>%
+df_disponible <- ee_get_date_ic(disponible) %>%
   arrange(time_start)
 
 # extraigo el id de la primera fecha
@@ -38,12 +38,8 @@ l8_img <- ee_as_raster(
 
 plotRGB(l8_img, r = 4, g = 3, b = 2, stretch = "hist")
 
-# proyecto el raster en UTM
-LC_ll <- projectRaster(l8_img, 
-                       crs = "+proj=utm +zone=19 +south +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0")
-
 # cargo toda la data en memoria
-LC_ll <- readAll(LC_ll)
+l8_img <- readAll(l8_img)
 
 # guardo raster en carpeta
 writeRaster(LC_ll, filename=paste0("data/landsat8_30m/l8_",anio,".tif"), format="GTiff", overwrite=TRUE)

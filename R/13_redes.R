@@ -16,7 +16,7 @@ LasCondes <- read_sf("data/shapefile/LasCondes.shp")
 direcciones <- read_csv("data/direcciones.csv")
 
 #exploramos listado
-direcciones
+direcciones = direcciones[1:10,]
 
 # intentamos agregando el nombre de Chile tambien
 p3 <- geo(paste0(direcciones$DIRECCION," Las Condes, Chile"), method="arcgis") 
@@ -50,7 +50,7 @@ LC_hway <- opq(LC_bbox) %>% # identifico bbox
   pluck("osm_lines") %>% # preservo solo elementos de osm_lines
   st_transform(crs=st_crs(poligonos))  # dejo en misma proyeccion que objeto base
 
-mapview(LC_hway)
+mapview(LasCondes)
 
 # extramos solo las calles que intersectan con las condes
 calles_LC <- 
@@ -94,7 +94,7 @@ nn_pol_unicos <- unique(nn_poligonos)
 distancia_red <- shortest_paths(net, from = nn_dir_unicos , to = nn_pol_unicos, output = "epath")
 
 # podemos calcular la distancia de cada poligono a cada junta de vecinos
-distancia_euclideana <- st_distance(poligonos, p3_sf)
+distancia_euclideana <- st_distance(poligonos, p3_sf[3,])
 
 # preservamos la menor distancia para asociar una manzana a una JJVV
 # generamos indicador de accesibilidad a jjvv
@@ -105,5 +105,5 @@ poligonos <-
 # visualizamos
 ggplot() +
   geom_sf(data=poligonos, aes(fill=accesibilidad))+
-  geom_sf(data = p3_sf, size = 2, col = "white") +
+  geom_sf(data = p3_sf[3,], size = 2, col = "white") +
   scale_fill_viridis_c(direction = -1)

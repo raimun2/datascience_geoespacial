@@ -1,93 +1,6 @@
 ### Calculo de Hotspots de Violencia ----
 
 # Cargar Librerias
-pacman::p_load(rgdal, rgeos, stars, spatstat, spdep, sf, raster,
-               spatialreg, tidyverse, gstat, MASS)
-
-
-# ***************************
-# Cargar y ordenar datos ----
-
-# Datos de delitos
-violencia <- read_rds("data/casos_violencia.rds")  %>%  
-  st_as_sf()
-
-# Cargar datos censales de nivel educativo en Las Condes a nivel de personas
-censo_lc <- readRDS("data/censo_lc.rds") %>% 
-  mutate(poblacion = 1,
-         CODINE011 = as.character(IDMZ)) %>% 
-  dplyr::select(-IDMZ)
-
-# Calcular poblacion por manzana
-poblacion <- 
-  censo_lc %>% 
-  group_by(CODINE011) %>% 
-  summarise(poblacion = sum(poblacion)) 
-
-# Calcular Nivel Educacional de jefes de hogar por manzana
-nived <- censo_lc %>% 
-  filter(DSOST==1) %>%  # Filtar sostenedores
-  group_by(CODINE011) %>% 
-  summarise(EDUC = mean(EDUC))
-
-# Cargar Poligonos de Manzanas de Las Condes (Censo 2012)
-# acoplar con datos de nivel educacional a manzanas
-mz_lc <- readRDS("data/MBHT_LC.rds") %>% 
-  st_as_sf() %>% 
-  rename(CODINE011 = ID_MANZ) %>% 
-  left_join(poblacion, by = "CODINE011") %>% 
-  left_join(nived, by = "CODINE011") %>%  
-  st_set_crs("+proj=utm +zone=19 +south +datum=WGS84 +units=m +no_defs +ellps=WGS84 +towgs84=0,0,0") %>% 
-  mutate(area = st_area(.)/10000,
-         densidad = poblacion/area,
-         violencia = lengths(st_intersects(geometry, violencia))) 
-
-# manzanas en version puntos
-mz_point <- mz_lc %>% 
-  st_centroid() 
-
-# visualizamos
-ggplot() +
-  geom_sf(data=mz_lc) + 
-  geom_sf(data = violencia) 
-
-
-
-# *************************
-# Kernel density ----
-# *************************
-
-# Calculo de Hotspots con radios mas y menos extensos de agregacion
-# extraigo puntos para la funcion kde2d
-pts <- violencia$geometry %>% unlist() %>% matrix(nrow=2) %>% t()
-
-del_hotspots_1 <- kde2d(pts[,1], pts[,2], h = 1500, n = 100)
-image(del_hotspots_1, col = viridis::viridis(100), main='Densidad de Delitos Violentos 0.06')
-
-
-del_hotspots_2 <- kde2d(pts[,1], pts[,2], h = 3000, n = 100)
-image(del_hotspots_2, col = viridis::viridis(100), main='Densidad de Delitos Violentos 0.03')
-
-
-# *************************
-# Ponderacion por distancia ----
-# *************************
-
-gs <- gstat(formula = violencia~1, locations = mz_lc)
-
-rast <- raster(mz_lc, res=30)
-
-idw <- interpolate(rast, gs)
-
-plot(idw, col = viridis::viridis(100), main='Densidad de Delitos KNN')
-
-
-
-
-
-### Calculo de Hotspots de Violencia ----
-
-# Cargar Librerias
 library(tidyverse)
 library(sf)
 library(MASS)
@@ -213,7 +126,7 @@ summary(modviol)
 
 ## Crear matriz de pesos espaciales
 nb = nb2listw(neighbours = knn2nb(
-  knn = knearneigh(x = mz_point, k = 15)), 
+  knn = knearneigh(x = mz_point, k = 4)), 
   style = "W")
 
 # autocorrelacion espacial de los errores
